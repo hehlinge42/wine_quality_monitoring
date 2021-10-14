@@ -1,9 +1,9 @@
 {	
-"paths":{"Inputs_path" : "../Inputs/",
-"Outputs_path":"../Outputs/",
-"folder_preprocessed":"Preprocessed/",
-"folder_models":"Models/",
-"folder_metrics":"Metrics/"
+"paths":{"Inputs_path" : "../data/inputs/",
+"Outputs_path":"../data/",
+"folder_preprocessed":"preprocessed/",
+"folder_models":"models/",
+"folder_metrics":"metrics/"
 
 },
 
@@ -11,7 +11,7 @@
 "log_level" : "INFO",
 
 "__comments_on_selections__":"You can choose the dataset of your choice and the model you want with the 2 following parameters",
-"selected_dataset": "stroke",
+"selected_dataset": "wine",
 "selected_model":"random_forest",
 
 
@@ -33,6 +33,7 @@
 							"y_name":"readmitted"},	
 					"wine":{"path_file":"wine_drift.csv",
 							"path_file_preprocessed":"wine_drift_preprocessed.csv",
+							"index_col": "Time",
 							"y_name":"quality"},
 					"marketing":{"path_file":"marketing_data.csv",
 							"path_file_preprocessed":"marketing_preprocessed.csv",

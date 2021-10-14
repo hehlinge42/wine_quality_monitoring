@@ -5,13 +5,13 @@ import os
 print(os.getcwd())
 
 import sys
-sys.path.insert(0,"Loading/")
-sys.path.insert(0,"Preprocessing/")
-sys.path.insert(0,"Modeling/")
-sys.path.insert(0,"Evaluation/")
-sys.path.insert(0,"Interpretability/")
-sys.path.insert(0,"Monitoring/")
-sys.path.insert(0,"Utils/")
+sys.path.insert(0,"loading/")
+sys.path.insert(0,"preprocessing/")
+sys.path.insert(0,"modeling/")
+sys.path.insert(0,"evaluation/")
+sys.path.insert(0,"interpretability/")
+sys.path.insert(0,"monitoring/")
+sys.path.insert(0,"utils/")
 
 
 import loading
@@ -26,7 +26,8 @@ import argparse
 import json
 from time import time
 
-import logging
+import logzero
+from logzero import logger
 
 ## The parser allow to get arguments from the command line in order to launch only selected steps
 parser = argparse.ArgumentParser(description='1st Industrialised ML Project',

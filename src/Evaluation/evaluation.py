@@ -10,7 +10,7 @@ import json
 
 #This script can be optimized depending on your needs
 
-def main_evaluation(clf,X_train,y_train, X_test, y_test, conf):
+def main_evaluation(clf, X_test, y_test, conf):
     """
     Main Evaluation Function: computes metrics and save them into a json file
     Args:
@@ -27,7 +27,6 @@ def main_evaluation(clf,X_train,y_train, X_test, y_test, conf):
 
 
     y_test_pred = np.array([clf.predict(X_test) >= 0.5], dtype=np.float32)[0]
-    y_train_pred = np.array([clf.predict(X_train) >= 0.5], dtype=np.float32)[0]
 
     dict_metrics = {}
     dict_metrics['f1_score'] = metric_f1_score(y_test, y_test_pred)
