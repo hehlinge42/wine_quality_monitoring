@@ -4,3 +4,5 @@ pandas
 numpy
 scikit-learn
 lightgbm
+scikit-multiflow
+evidently

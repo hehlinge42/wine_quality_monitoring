@@ -130,6 +130,3 @@ def basic_split(df, size_of_test, X_columns, y_column, seed=42):
         df[X_columns], df[y_column], test_size=size_of_test, random_state=seed
     )
     return X_train, X_test, y_train, y_test
-
-def check_concept_drift(df_preprocessed, new_batch):
-    return

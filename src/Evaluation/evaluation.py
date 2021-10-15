@@ -34,6 +34,7 @@ def main_evaluation(clf, X_test, y_test, conf):
     dict_metrics['recall'] = metric_recall(y_test, y_test_pred)
     dict_metrics['precision'] = metric_precision(y_test, y_test_pred)
     dict_metrics['confusion_matrix'] = metric_confusion_matrix(y_test, y_test_pred)
+    dict_metrics["prediction"] = y_test_pred
 
     with open(conf['paths']['Outputs_path'] + conf['paths']['folder_metrics'] + 'metrics_'
               + conf['selected_dataset'] + "_" + conf['selected_model'] + '.txt', 'w') as outfile:

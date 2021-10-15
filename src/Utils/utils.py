@@ -81,5 +81,14 @@ def save_metrics(conf, db):
     db.to_csv(filepath, index=False)
 
 def get_y_column_from_conf(conf):
-
     return conf["dict_info_files"][conf["selected_dataset"]]["y_name"]
+
+def get_column_mapping(conf, df):
+    y_column = get_y_column_from_conf(conf)
+    X_columns = [x for x in df.columns if x != y_column]
+    column_mapping = {
+        "target": y_column,
+        "prediction": "prediction",
+        "numerical_features": X_columns
+    }
+    return column_mapping
