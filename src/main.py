@@ -4,13 +4,14 @@
 import os
 
 import sys
-sys.path.insert(0,"loading/")
-sys.path.insert(0,"preprocessing/")
-sys.path.insert(0,"modeling/")
-sys.path.insert(0,"evaluation/")
-sys.path.insert(0,"interpretability/")
-sys.path.insert(0,"monitoring/")
-sys.path.insert(0,"utils/")
+
+sys.path.insert(0, "loading/")
+sys.path.insert(0, "preprocessing/")
+sys.path.insert(0, "modeling/")
+sys.path.insert(0, "evaluation/")
+sys.path.insert(0, "interpretability/")
+sys.path.insert(0, "monitoring/")
+sys.path.insert(0, "utils/")
 
 
 import loading
@@ -29,34 +30,49 @@ import logzero
 from logzero import logger
 
 ## The parser allow to get arguments from the command line in order to launch only selected steps
-parser = argparse.ArgumentParser(description='1st Industrialised ML Project',
-epilog="This has been developped by Quinten")
+parser = argparse.ArgumentParser(
+    description="1st Industrialised ML Project",
+    epilog="This has been developped by Quinten",
+)
 
-parser.add_argument('--step', help='integer that tells which step to run', default=-1)
-parser.add_argument('--step_from',
-help='integer that tells from which step to run main. It then run all the steps from step_from',
-default=0)
-parser.add_argument('--step_list', help='list of integer that tells which steps to run', default=[])
+parser.add_argument("--step", help="integer that tells which step to run", default=-1)
+parser.add_argument(
+    "--step_from",
+    help="integer that tells from which step to run main. It then run all the steps from step_from",
+    default=0,
+)
+parser.add_argument(
+    "--step_list", help="list of integer that tells which steps to run", default=[]
+)
 
-parser.add_argument("--pathconf", help="path to conf file", default="../params/conf/conf.json")
+parser.add_argument(
+    "--pathconf", help="path to conf file", default="../params/conf/conf.json"
+)
+
+parser.add_argument(
+    "--nb_batch", help="number of subsequent batches to look at", default=1
+)
+
+BATCH_SIZE = 50
 
 args = parser.parse_args()
 step = int(args.step)
 step_from = int(args.step_from)
 step_list = args.step_list
 path_conf = args.pathconf
+nb_batch = int(args.nb_batch)
 
 # path_conf ='../conf/conf.json'
-conf = json.load(open(path_conf, 'r'))
+conf = json.load(open(path_conf, "r"))
 
-path_log = conf['path_log'] # "../log/my_log_file.txt"
-log_level = conf['log_level'] # "DEBUG"
+path_log = conf["path_log"]  # "../log/my_log_file.txt"
+log_level = conf["log_level"]  # "DEBUG"
 
 # instanciation of the logger
 logger = u.my_get_logger(path_log, log_level, my_name="main_logger")
 
 
-def main(logger, step_list, NB_STEP_TOT, path_conf = '../conf/conf.json'):
+def main(logger, step_list, NB_STEP_TOT, nb_batch, path_conf="../conf/conf.json"):
     """
     Main function launching step by step the ML Pipeline
     Args:
@@ -67,27 +83,31 @@ def main(logger, step_list, NB_STEP_TOT, path_conf = '../conf/conf.json'):
     """
     START = time()
 
-    #Computation of the steps to complete
+    # Computation of the steps to complete
     if len(step_list) > 0:
         step_list = eval(step_list)
-    
+
     if (step == -1) and (len(step_list) == 0):
         step_list = list(range(step_from, NB_STEP_TOT + 1))
-    
-    logger.debug('Steps to execute :' + ', '.join(map(str,step_list)))
-    
-    #Reading conf file
-    conf = json.load(open(path_conf, 'r'))
+
+    logger.debug("Steps to execute :" + ", ".join(map(str, step_list)))
+
+    # Reading conf file
+    conf = json.load(open(path_conf, "r"))
     seed = 42
 
-    #Launch of each selected step
+    # Launch of each selected step
     if (step == 1) or (1 in step_list):
         logger.debug("Beginning of step 1 - Loading and Preprocessing")
         # Reading of the dataset selected in the conf file
         df = loading.read_csv_from_name(conf)
 
         # Preprocessing of the selected dataset
-        df_preprocessed, X_columns, y_column = preprocessing.main_preprocessing_from_name(df, conf)
+        (
+            df_preprocessed,
+            X_columns,
+            y_column,
+        ) = preprocessing.main_preprocessing_from_name(df, conf)
 
         # Writting of the preprocessed dataset
         loading.write_preprocessed_csv_from_name(df_preprocessed, conf)
@@ -95,41 +115,46 @@ def main(logger, step_list, NB_STEP_TOT, path_conf = '../conf/conf.json'):
         logger.debug("End of step 1 ")
 
     if (step == 2) or (2 in step_list):
-        
+
         logger.debug(" Beginning of step 2 - Loading Preprocessed ")
         # Loading of the preprocessed dataset
         df_preprocessed = loading.load_preprocessed_csv_from_name(conf)
         # Basic Splitting between train and test
         y_column = u.get_y_column_from_conf(conf)
         X_columns = [x for x in df_preprocessed.columns if x != y_column]
-        X_train, X_test, y_train, y_test = preprocessing.basic_split(df_preprocessed, 0.25, X_columns, y_column , seed=seed)
+        X_train, X_test, y_train, y_test = preprocessing.basic_split(
+            df_preprocessed, 0.25, X_columns, y_column, seed=seed
+        )
 
         logger.debug(" End of step 2 ")
 
     if (step == 3) or (3 in step_list):
-        if 2 not in step_list: #Step 2 must be launched with step 3
+        if 2 not in step_list:  # Step 2 must be launched with step 3
             df_preprocessed = loading.load_preprocessed_csv_from_name(conf)
             # Basic Splitting between train and test
             y_column = u.get_y_column_from_conf(conf)
             X_columns = [x for x in df_preprocessed.columns if x != y_column]
-            X_train, X_test, y_train, y_test = preprocessing.basic_split(df_preprocessed, 0.25, X_columns, y_column, seed=seed)
+            X_train, X_test, y_train, y_test = preprocessing.basic_split(
+                df_preprocessed, 0.25, X_columns, y_column, seed=seed
+            )
 
         logger.debug(" Beginning of step 3 - Modeling ")
-        
+
         # Modelisation using the model selected in the conf file
         clf, best_params = modeling.main_modeling_from_name(X_train, y_train, conf)
         # Saving the model
         u.save_model(clf, conf)
         logger.debug(" End of step 3 ")
 
-
     if (step == 4) or (4 in step_list):
-        if 2 not in step_list: #Step 2 must be launched with step 4
+        if 2 not in step_list:  # Step 2 must be launched with step 4
             df_preprocessed = loading.load_preprocessed_csv_from_name(conf)
             # Basic Splitting between train and test
             y_column = u.get_y_column_from_conf(conf)
             X_columns = [x for x in df_preprocessed.columns if x != y_column]
-            X_train, X_test, y_train, y_test = preprocessing.basic_split(df_preprocessed, 0.25, X_columns, y_column, seed=seed)
+            X_train, X_test, y_train, y_test = preprocessing.basic_split(
+                df_preprocessed, 0.25, X_columns, y_column, seed=seed
+            )
 
         logger.debug(" Beginning of step 4 - Evaluation")
 
@@ -141,13 +166,12 @@ def main(logger, step_list, NB_STEP_TOT, path_conf = '../conf/conf.json'):
 
         logger.debug("End of step 4 ")
 
-
     logger.debug("Time for total execution :" + str(time() - START))
-        
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
-        main(logger, step_list, NB_STEP_TOT = 4, path_conf=path_conf)
-    
+        main(logger, step_list, NB_STEP_TOT=4, nb_batch=nb_batch, path_conf=path_conf)
+
     except Exception as e:
         logger.error("Error during execution", exc_info=True)

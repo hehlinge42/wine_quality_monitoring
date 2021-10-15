@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a75c011-3d5c-4274-ad18-5ca5f7d1c565" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metrics/metrics_wine_random_forest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/metrics/metrics_wine_random_forest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metrics/monitoring_db.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/metrics/monitoring_db.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/models/wine_random_forest.sav" beforeDir="false" afterPath="$PROJECT_DIR$/data/models/wine_random_forest.sav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/params/conf/conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/params/conf/conf.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main_front.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main_front.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/preprocessing/preprocessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/preprocessing/preprocessing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +34,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -52,7 +48,7 @@
       <workItem from="1634221995061" duration="7716000" />
       <workItem from="1634284679542" duration="5071000" />
       <workItem from="1634291647508" duration="2161000" />
-      <workItem from="1634294011585" duration="2134000" />
+      <workItem from="1634294011585" duration="3584000" />
     </task>
     <servers />
   </component>
