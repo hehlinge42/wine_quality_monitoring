@@ -7,8 +7,8 @@
         "folder_metrics": "metrics/"
     },
     "path_log": "../params/logs/logs.log",
+    "log_level": "DEBUG",
 	"monitoring_db_path": "monitoring_db.csv",
-    "log_level": "INFO",
     "__comments_on_selections__": "You can choose the dataset of your choice and the model you want with the 2 following parameters",
     "selected_dataset": "wine",
     "selected_model": "random_forest",

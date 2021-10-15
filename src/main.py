@@ -2,7 +2,6 @@
 
 ################## Importing libraries ####################
 import os
-print(os.getcwd())
 
 import sys
 sys.path.insert(0,"loading/")
@@ -75,7 +74,6 @@ def main(logger, step_list, NB_STEP_TOT, path_conf = '../conf/conf.json'):
     if (step == -1) and (len(step_list) == 0):
         step_list = list(range(step_from, NB_STEP_TOT + 1))
     
-    print(step_list)
     logger.debug('Steps to execute :' + ', '.join(map(str,step_list)))
     
     #Reading conf file
@@ -139,8 +137,7 @@ def main(logger, step_list, NB_STEP_TOT, path_conf = '../conf/conf.json'):
         clf = u.load_model(conf)
 
         # Computing metrics
-        dict_metrics = evaluation.main_evaluation(clf, X_train, y_train, X_test, y_test, conf)
-
+        dict_metrics = evaluation.main_evaluation(clf, X_test, y_test, conf)
 
         logger.debug("End of step 4 ")
 

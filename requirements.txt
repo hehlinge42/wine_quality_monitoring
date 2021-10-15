@@ -1,0 +1,6 @@
+streamlit
+logzero
+pandas
+numpy
+scikit-learn
+lightgbm

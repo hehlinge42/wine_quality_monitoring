@@ -42,6 +42,7 @@ def process_next_batch(global_data, db):
     new_batch = global_data["df_preprocessed"].loc[
                 nb_lines: nb_lines + BATCH_SIZE - 1, :
                 ]
+    check_
     classifier = u.load_model(global_data["conf"], version="_0")
     y_test = new_batch[global_data["y_column"]]
     X_test = new_batch.drop(global_data["y_column"], axis=1)

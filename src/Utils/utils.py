@@ -14,8 +14,6 @@ def my_get_logger(path_log, log_level, my_name=""):
     :return: Fichier de log
     """
 
-    # print(path_log)
-    # print(log_level)
 
     log_level_dict = {
         "CRITICAL": logging.CRITICAL,
@@ -26,7 +24,6 @@ def my_get_logger(path_log, log_level, my_name=""):
     }
 
     LOG_LEVEL = log_level_dict[log_level]
-    # print(LOG_LEVEL)
 
     if my_name != "":
         logger = logging.getLogger(my_name)
