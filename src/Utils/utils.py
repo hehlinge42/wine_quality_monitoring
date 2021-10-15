@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import pickle
+import pandas as pd
 
 from logzero import logger
 
@@ -50,22 +51,22 @@ def my_get_logger(path_log, log_level, my_name=""):
     return logger
 
 
-def save_model(clf, conf, name=""):
+def save_model(clf, conf, name="", version=""):
     if len(name) == 0:
         name = conf["selected_dataset"] + "_" + conf["selected_model"]
     filename = (
-        conf["paths"]["Outputs_path"] + conf["paths"]["folder_models"] + name + ".sav"
+        conf["paths"]["Outputs_path"] + conf["paths"]["folder_models"] + name + version + ".sav"
     )
     pickle.dump(clf, open(filename, "wb"))
     logger.info("Modele sauvergarde: " + filename)
     return "OK"
 
 
-def load_model(conf, name=None):
+def load_model(conf, name=None, version=""):
     if name is None:
         name = conf["selected_dataset"] + "_" + conf["selected_model"]
     filename = (
-        conf["paths"]["Outputs_path"] + conf["paths"]["folder_models"] + name + ".sav"
+        conf["paths"]["Outputs_path"] + conf["paths"]["folder_models"] + name + version + ".sav"
     )
     logger.debug(f"loading model at path: {filename}")
     with open(filename, "rb") as fd:
@@ -73,6 +74,14 @@ def load_model(conf, name=None):
     logger.info("Model loaded: " + filename)
     return clf
 
+def load_metrics(conf):
+    filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path"]
+    db = pd.read_csv(filepath)
+    return db
+
+def save_metrics(conf, db):
+    filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path"]
+    db.to_csv(filepath, index=False)
 
 def get_y_column_from_conf(conf):
 

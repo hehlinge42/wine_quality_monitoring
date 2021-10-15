@@ -2,20 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a75c011-3d5c-4274-ad18-5ca5f7d1c565" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main_front.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Monitoring/model_monitor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/metrics/metrics_wine_random_forest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/metrics/metrics_wine_random_forest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/params/conf/conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/params/conf/conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Loading/loading.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Loading/loading.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Monitoring/monitoring.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Monitoring/monitoring.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Preprocessing/preprocessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Preprocessing/preprocessing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Monitoring/monitoring.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main_front.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main_front.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/my_notebook_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/src/my_notebook_test.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -43,7 +49,8 @@
       <option name="presentableId" value="Default" />
       <updated>1634216002311</updated>
       <workItem from="1634216006376" duration="3436000" />
-      <workItem from="1634221995061" duration="7618000" />
+      <workItem from="1634221995061" duration="7716000" />
+      <workItem from="1634284679542" duration="5071000" />
     </task>
     <servers />
   </component>
@@ -60,6 +67,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />

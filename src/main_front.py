@@ -11,68 +11,74 @@ sys.path.insert(0, "modeling/")
 sys.path.insert(0, "evaluation/")
 sys.path.insert(0, "interpretability/")
 sys.path.insert(0, "utils/")
+sys.path.insert(0, "monitoring/")
 
 import utils as u
 import loading
 import json
 import evaluation
 import preprocessing
+import monitoring
+
 import warnings
 warnings.filterwarnings('ignore')
 
-class ModelMonitor():
-    def __init__(self, conf):
-        logger.debug("In ModelMonitor constructor")
-        self.conf = conf
-        self.df_preprocessed = loading.load_preprocessed_csv_from_name(self.conf)
-        self.y_column = u.get_y_column_from_conf(self.conf)
-        self.X_columns = [x for x in self.df_preprocessed.columns if x != self.y_column]
-        X_train, X_test, y_train, y_test = preprocessing.basic_split(
-            self.df_preprocessed, 0.25, self.X_columns, self.y_column
-        )
-        self.classifier = u.load_model(self.conf)
-        self.dict_metrics = evaluation.main_evaluation(
-            self.classifier, X_test, y_test, self.conf
-        )
-        f1_score = round(self.dict_metrics["f1_score"], 2)
-        self.f1_per_batch = pd.DataFrame({"batch": [0], "f1_score": [f1_score]})
-        self.f1_per_batch.set_index("batch", inplace=True)
-        self.nb_lines = 500
-        self.nb_clicks = 0
+from monitoring.model_monitor import ModelMonitor
 
-    def load_next_batch(self):
-        new_batch = self.df_preprocessed.loc[self.nb_lines:self.nb_lines + BATCH_SIZE - 1, :]
-        self.nb_lines += BATCH_SIZE
-        self.nb_clicks += 1
-        y_test = new_batch[self.y_column]
-        X_test = new_batch.drop(self.y_column, axis=1)
-        self.dict_metrics = evaluation.main_evaluation(
-            self.classifier, X_test, y_test, self.conf
-        )
-        new_row = {'f1_score': self.dict_metrics["f1_score"]}
-        self.f1_per_batch = self.f1_per_batch.append(new_row, ignore_index=True)
-        logger.debug(f"\n{self.f1_per_batch}")
-        logger.debug(f"monitor: \n{str(self)}")
-        # monitor.f1_per_batch
-        # f1_score_widget = st.metric(f"F1-score", str(self.f1_per_batch.at[len(self.f1_per_batch), "f1_score"]))
-        # f1_score_chart = st.line_chart(self.f1_per_batch)
-
-    # def __str__(self):
-    #     return f"nb_lines: {str(self.nb_lines)}, nb_clicks: {str(self.nb_clicks)}"
-
-path_conf = "../params/conf/conf.json"
 BATCH_SIZE = 50
-with open(path_conf, "r") as json_fd:
-    conf = json.load(json_fd)
 
-monitor = ModelMonitor(conf)
-st.title("Monitoring wine quality prediction model")
-f1_score_widget = st.metric(f"F1-score", str(monitor.f1_per_batch.at[len(monitor.f1_per_batch) - 1, "f1_score"]))
-f1_score_chart = st.line_chart(monitor.f1_per_batch)
-monitor.f1_per_batch
+@st.cache
+def cached_load(path_conf):
+    global_data = {}
+    with open(path_conf, "r") as json_fd:
+        global_data["conf"] = json.load(json_fd)
+    global_data["df_preprocessed"] = loading.load_preprocessed_csv_from_name(global_data["conf"])
+    global_data["y_column"] = u.get_y_column_from_conf(global_data["conf"])
+    global_data["X_columns"] = [x for x in global_data["df_preprocessed"].columns if x != global_data["y_column"]]
+    return global_data
+
+def process_next_batch(global_data, db):
+    nb_lines = db.at[len(db) - 1, "nb_lines"]
+    new_batch = global_data["df_preprocessed"].loc[
+                nb_lines: nb_lines + BATCH_SIZE - 1, :
+                ]
+    classifier = u.load_model(global_data["conf"], version="_0")
+    y_test = new_batch[global_data["y_column"]]
+    X_test = new_batch.drop(global_data["y_column"], axis=1)
+    dict_metrics = evaluation.main_evaluation(
+        classifier, X_test, y_test, global_data["conf"]
+    )
+    f1_score = round(dict_metrics["f1_score"], 2)
+    new_row = pd.DataFrame({"batch": len(db), "f1_score": [f1_score], "nb_lines": nb_lines + BATCH_SIZE, "version": "_0"})
+    db = db.append(new_row, ignore_index=True)
+    u.save_metrics(global_data["conf"], db)
+    return db
+
+
+global_data = cached_load("../params/conf/conf.json")
+
+try:
+    db = u.load_metrics(global_data["conf"])
+except:
+    logger.debug("Load at start")
+    X_train, X_test, y_train, y_test = preprocessing.basic_split(
+        global_data["df_preprocessed"], 0.25, global_data["X_columns"], global_data["y_column"]
+    )
+    classifier = u.load_model(global_data["conf"], version="_0")
+    dict_metrics = evaluation.main_evaluation(
+        classifier, X_test, y_test, global_data["conf"]
+    )
+    f1_score = round(dict_metrics["f1_score"], 2)
+    db = pd.DataFrame({"batch": 0, "f1_score": [f1_score], "nb_lines": 500, "version": "_0"})
+    u.save_metrics(global_data["conf"], db)
 
 with st.sidebar:
     st.header("Load next batch")
     load_next_batch = st.button("Load")
     if load_next_batch:
-        monitor.load_next_batch()
+        db = process_next_batch(global_data, db)
+
+st.title("Monitoring wine quality prediction model")
+f1_score_widget = st.metric(f"F1-score", str(db.at[len(db) - 1, "f1_score"]))
+f1_score_chart = st.line_chart(db[["f1_score"]])
+db
