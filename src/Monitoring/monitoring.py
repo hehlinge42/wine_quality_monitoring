@@ -16,7 +16,16 @@ import utils as u
 from logzero import logger
 
 
-def check_concept_drift(past_data, new_batch):
+def check_adwin_concept_drift(data, features):
+
+    adwin_results = {}
+    for feature in features:
+        feature_idx_changes = check_featurewise_concept_drift(data, feature)
+        adwin_results[feature] = feature_idx_changes
+    return adwin_results
+
+
+def check_featurewise_concept_drift(data, feature):
     """
     Args:
         past_data:
@@ -27,11 +36,12 @@ def check_concept_drift(past_data, new_batch):
     """
 
     adwin = ADWIN()
-    adwin.add_element(past_data)
-    adwin.add_element(new_batch)
-    detected_change = adwin.detected_change()
-    detected_warning = adwin.detected_warning_zone()
-    return detected_warning, detected_change
+    idx_of_changes = []
+    for idx, row in enumerate(data[feature]):
+        adwin.add_element(row)
+        if adwin.detected_change():
+            idx_of_changes.append(idx)
+    return idx_of_changes
 
 
 def detect_features_drift(
@@ -122,24 +132,20 @@ def get_current_state(db_batch, global_data):
     return current_state
 
 
-def fit_isolation_forest(X_train, conf, current_state=None):
-    if current_state is None:
-        version = "_0"
-    else:
-        version = current_state["current_model_version"]
-
+def fit_isolation_forest(X_train, conf, version):
     iso = IsolationForest(contamination=0.05)
     iso.fit(X_train)
     u.save_model(iso, conf, name="isolation_forest", version=version)
-    nb_outliers = get_nb_outliers(X_train, iso)
-    return nb_outliers
+    outliers = get_outliers(X_train, iso, conf)
+    return outliers
 
 
-def get_nb_outliers(X, iso_forest):
+def get_outliers(X, iso_forest, conf):
     y_pred = iso_forest.predict(X)
     outliers_mask = y_pred == -1
     X_outliers = X.loc[outliers_mask, :]
-    return len(X_outliers)
+    u.save_outliers(X_outliers, conf)
+    return X_outliers
 
 
 def get_share_outliers(db):
@@ -148,16 +154,34 @@ def get_share_outliers(db):
 
 def get_recap(db, global_data):
     try:
-        cols = [col + "_p_value" for col in global_data["X_columns"]]
-        cols.append(global_data["y_column"] + "_p_value")
+        features_pvalue = [col + "_p_value" for col in global_data["X_columns"]]
+        cols = features_pvalue + [global_data["y_column"] + "_p_value"]
         df = db.loc[len(db) - 1, cols].T.to_frame()
-        df.rename({1: "p-value"}, axis=1, inplace=True)
-        df.reset_index(inplace=True)
-    except:
+        logger.debug(f"df.columns: {df.columns}")
+        df.rename({df.columns[-1]: "p-value"}, axis=1, inplace=True)
+        features = {
+            features_pvalue[i]: global_data["X_columns"][i]
+            for i in range(len(features_pvalue))
+        }
+        df.rename(features, axis=0, inplace=True)
+        df.sort_values(by=["p-value"], inplace=True)
+    except KeyError:
         df = None
+    except:
         logger.exception("")
     return df
 
 
-def get_advice(db):
-    return ""
+def get_advice(adwin):
+
+    if adwin is None:
+        advice = "No advice for now."
+    else:
+        advice = (
+            "You may wish to look at the distribution around the following index: <br/>"
+        )
+        for k, v in adwin.items():
+            if len(v) != 0:
+                advice += f"- {k} look at indices **{v}**<br/>"
+
+    return advice

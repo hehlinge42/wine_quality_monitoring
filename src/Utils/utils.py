@@ -2,6 +2,7 @@
 import logging
 import pickle
 import pandas as pd
+import json
 
 from logzero import logger
 
@@ -98,20 +99,89 @@ def load_metrics(conf, metric_type="batch"):
     return db
 
 
-def save_metrics(conf, db, type="batch"):
-    if type == "batch":
+def save_metrics(conf, db, metric_type="batch"):
+    if metric_type == "batch":
         filepath = (
             conf["paths"]["Outputs_path"]
             + conf["paths"]["folder_metrics"]
             + conf["monitoring_db_path_batch"]
         )
-    else:
+    elif metric_type == "model":
         filepath = (
             conf["paths"]["Outputs_path"]
             + conf["paths"]["folder_metrics"]
             + conf["monitoring_db_path_model"]
         )
+    else:
+        raise NotImplementedError("Only batch and model csv are saved.")
     db.to_csv(filepath, index=False)
+
+
+def save_outliers(outliers, conf):
+    filepath = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_metrics"]
+        + conf["outliers_filename"]
+    )
+    outliers.to_csv(filepath, index_label="Time")
+
+
+def load_outliers(conf):
+    filepath = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_metrics"]
+        + conf["outliers_filename"]
+    )
+    outliers = pd.read_csv(filepath)
+    outliers.set_index("Time", inplace=True)
+    return outliers
+
+
+def save_train_data_description(description, conf):
+    filepath = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_metrics"]
+        + conf["description_filename"]
+    )
+    description.to_csv(filepath, index_label="Statistics")
+
+
+def load_train_data_description(conf):
+    filepath = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_metrics"]
+        + conf["description_filename"]
+    )
+    try:
+        description = pd.read_csv(filepath)
+        description.set_index("Statistics", inplace=True)
+    except FileNotFoundError:
+        description = None
+    return description
+
+
+def save_adwin(adwin, conf):
+    filepath = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_metrics"]
+        + conf["adwin_filename"]
+    )
+    with open(filepath, "w") as fd:
+        json.dump(adwin, fd)
+
+
+def load_adwin(conf):
+    filepath = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_metrics"]
+        + conf["adwin_filename"]
+    )
+    try:
+        with open(filepath, "r") as fd:
+            adwin = json.load(fd)
+    except:
+        adwin = None
+    return adwin
 
 
 def get_y_column_from_conf(conf):
@@ -127,3 +197,20 @@ def get_column_mapping(conf, df):
         "numerical_features": X_columns,
     }
     return column_mapping
+
+
+def get_sub_df_preprocessed(df_preprocessed, db_models):
+    start_data = db_models.tail(1)["start"].values[0]
+    end_data = db_models.tail(1)["end"].values[0]
+    sub_df = df_preprocessed.loc[start_data:end_data, :]
+    return sub_df
+
+
+def get_sub_df_preprocessed_batch(df_preprocessed, db_batch):
+    start_data = (
+        db_batch.tail(1)["nb_lines"].values[0]
+        - db_batch.tail(1)["batch_size"].values[0]
+    )
+    end_data = db_batch.tail(1)["nb_lines"].values[0]
+    sub_df = df_preprocessed.loc[start_data:end_data, :]
+    return sub_df
