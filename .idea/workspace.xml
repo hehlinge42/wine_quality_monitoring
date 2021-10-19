@@ -2,16 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a75c011-3d5c-4274-ad18-5ca5f7d1c565" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Monitoring/monitoring.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/metrics/metrics_wine_random_forest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/metrics/metrics_wine_random_forest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/metrics/monitoring_db.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Evaluation/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Evaluation/evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Monitoring/model_monitor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Preprocessing/preprocessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Preprocessing/preprocessing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/models/wine_random_forest_0.sav" beforeDir="false" afterPath="$PROJECT_DIR$/data/models/wine_random_forest_0.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/params/conf/conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/params/conf/conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Monitoring/monitoring.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Monitoring/monitoring.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main_front.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main_front.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/my_notebook_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/src/my_notebook_test.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +53,9 @@
       <workItem from="1634284679542" duration="5071000" />
       <workItem from="1634291647508" duration="2161000" />
       <workItem from="1634294011585" duration="3584000" />
+      <workItem from="1634393729197" duration="207000" />
+      <workItem from="1634541088745" duration="19658000" />
+      <workItem from="1634626796713" duration="1813000" />
     </task>
     <servers />
   </component>

@@ -71,13 +71,19 @@ def load_model(conf, name=None, version=""):
     logger.info("Model loaded: " + filename)
     return clf
 
-def load_metrics(conf):
-    filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path"]
+def load_metrics(conf, type="batch"):
+    if type == "batch":
+        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_batch"]
+    else:
+        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_model"]
     db = pd.read_csv(filepath)
     return db
 
-def save_metrics(conf, db):
-    filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path"]
+def save_metrics(conf, db, type="batch"):
+    if type == "batch":
+        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_batch"]
+    else:
+        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_model"]
     db.to_csv(filepath, index=False)
 
 def get_y_column_from_conf(conf):
