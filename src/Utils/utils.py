@@ -14,7 +14,6 @@ def my_get_logger(path_log, log_level, my_name=""):
     :return: Fichier de log
     """
 
-
     log_level_dict = {
         "CRITICAL": logging.CRITICAL,
         "ERROR": logging.ERROR,
@@ -52,7 +51,11 @@ def save_model(clf, conf, name="", version=""):
     if len(name) == 0:
         name = conf["selected_dataset"] + "_" + conf["selected_model"]
     filename = (
-        conf["paths"]["Outputs_path"] + conf["paths"]["folder_models"] + name + version + ".sav"
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_models"]
+        + name
+        + version
+        + ".sav"
     )
     pickle.dump(clf, open(filename, "wb"))
     logger.info("Modele sauvergarde: " + filename)
@@ -63,7 +66,11 @@ def load_model(conf, name=None, version=""):
     if name is None:
         name = conf["selected_dataset"] + "_" + conf["selected_model"]
     filename = (
-        conf["paths"]["Outputs_path"] + conf["paths"]["folder_models"] + name + version + ".sav"
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_models"]
+        + name
+        + version
+        + ".sav"
     )
     logger.debug(f"loading model at path: {filename}")
     with open(filename, "rb") as fd:
@@ -71,23 +78,45 @@ def load_model(conf, name=None, version=""):
     logger.info("Model loaded: " + filename)
     return clf
 
-def load_metrics(conf, type="batch"):
-    if type == "batch":
-        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_batch"]
+
+def load_metrics(conf, metric_type="batch"):
+    if metric_type == "batch":
+        filepath = (
+            conf["paths"]["Outputs_path"]
+            + conf["paths"]["folder_metrics"]
+            + conf["monitoring_db_path_batch"]
+        )
+    elif metric_type == "model":
+        filepath = (
+            conf["paths"]["Outputs_path"]
+            + conf["paths"]["folder_metrics"]
+            + conf["monitoring_db_path_model"]
+        )
     else:
-        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_model"]
+        raise NotImplementedError("Only batch and model csv are saved.")
     db = pd.read_csv(filepath)
     return db
 
+
 def save_metrics(conf, db, type="batch"):
     if type == "batch":
-        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_batch"]
+        filepath = (
+            conf["paths"]["Outputs_path"]
+            + conf["paths"]["folder_metrics"]
+            + conf["monitoring_db_path_batch"]
+        )
     else:
-        filepath = conf["paths"]["Outputs_path"] + conf["paths"]["folder_metrics"] + conf["monitoring_db_path_model"]
+        filepath = (
+            conf["paths"]["Outputs_path"]
+            + conf["paths"]["folder_metrics"]
+            + conf["monitoring_db_path_model"]
+        )
     db.to_csv(filepath, index=False)
+
 
 def get_y_column_from_conf(conf):
     return conf["dict_info_files"][conf["selected_dataset"]]["y_name"]
+
 
 def get_column_mapping(conf, df):
     y_column = get_y_column_from_conf(conf)
@@ -95,6 +124,6 @@ def get_column_mapping(conf, df):
     column_mapping = {
         "target": y_column,
         "prediction": "prediction",
-        "numerical_features": X_columns
+        "numerical_features": X_columns,
     }
     return column_mapping

@@ -102,8 +102,8 @@ def get_means_std(df_preprocessed):
 
 def get_current_state(db_batch, global_data):
     current_state = {}
-    current_state["nb_lines"] = db.at[len(db) - 1, "nb_lines"]
-    current_state["current_model_version"] = db.at[len(db) - 1, "version"]
+    current_state["nb_lines"] = db_batch.at[len(db_batch) - 1, "nb_lines"]
+    current_state["current_model_version"] = db_batch.at[len(db_batch) - 1, "version"]
     current_state["current_model_version_int"] = int(
         current_state["current_model_version"][1:]
     )
@@ -143,14 +143,8 @@ def get_nb_outliers(X, iso_forest):
 
 
 def get_share_outliers(db):
-    return (
-        str(
-            round(
-                db.at[len(db) - 1, "nb_outliers"] * 100
-            )
-        )
-        + "%"
-    )
+    return str(round(db.at[len(db) - 1, "nb_outliers"] * 100)) + "%"
+
 
 def get_recap(db, global_data):
     try:
@@ -163,6 +157,7 @@ def get_recap(db, global_data):
         df = None
         logger.exception("")
     return df
+
 
 def get_advice(db):
     return ""
