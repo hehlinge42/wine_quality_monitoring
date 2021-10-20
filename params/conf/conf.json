@@ -14,7 +14,8 @@
     "description_filename": "train_data_description.csv",
     "adwin_filename": "adwin.json",
     "__comments_on_selections__": "You can choose the dataset of your choice and the model you want with the 2 following parameters",
-    "selected_dataset": "wine",
+    "selected_dataset": "marketing",
+    "column_mapping_path": "marketing_mapping.json",
     "selected_model": "random_forest",
     "__comments_on_dictionnary__": "Here you have to write all the information needed when you add a new dataset",
     "dict_info_files": {
@@ -52,6 +53,7 @@
         "marketing": {
             "path_file": "marketing_data.csv",
             "path_file_preprocessed": "marketing_preprocessed.csv",
+            "index_col": "ID",
             "y_name": "Response"
         }
     }

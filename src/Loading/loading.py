@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import logging
-logger = logging.getLogger('main_logger')
 
-#Global:
+logger = logging.getLogger("main_logger")
+
+# Global:
 
 
 def read_csv_from_name(conf):
@@ -15,11 +16,15 @@ def read_csv_from_name(conf):
     Returns: dataframe read from csv
 
     """
-    selected_dataset = conf['selected_dataset']
-    path = conf["paths"]["Inputs_path"]+ conf["dict_info_files"][selected_dataset]["path_file"]
+    selected_dataset = conf["selected_dataset"]
+    path = (
+        conf["paths"]["Inputs_path"]
+        + conf["dict_info_files"][selected_dataset]["path_file"]
+    )
     index_col = conf["dict_info_files"][selected_dataset]["index_col"]
 
     return read_csv_from_path(path, index_col)
+
 
 def read_csv_from_path(path, index_col=None):
     """
@@ -30,7 +35,7 @@ def read_csv_from_path(path, index_col=None):
     Returns: dataframe
 
     """
-    #This function CAN be sophisticated: detection of format, delimiter etc.
+    # This function CAN be sophisticated: detection of format, delimiter etc.
 
     if index_col is None:
         df = pd.read_csv(path, sep=";")
@@ -38,11 +43,12 @@ def read_csv_from_path(path, index_col=None):
         df = pd.read_csv(path, sep=";", index_col=index_col)
     if df.shape[1] == 1:
         df = pd.read_csv(path, sep=",")
-    logger.debug('file read : ' + path)
+    logger.debug("file read : " + path)
 
     return df
 
-def write_preprocessed_csv_from_name(df,conf):
+
+def write_preprocessed_csv_from_name(df, conf):
     """
     Writes the preprocessed dataframe
     Args:
@@ -52,12 +58,17 @@ def write_preprocessed_csv_from_name(df,conf):
     Returns: "ok"
 
     """
-    selected_dataset = conf['selected_dataset']
-    path = conf["paths"]["Outputs_path"]+conf["paths"]["folder_preprocessed"]+conf["dict_info_files"][selected_dataset]["path_file_preprocessed"]
+    selected_dataset = conf["selected_dataset"]
+    path = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_preprocessed"]
+        + conf["dict_info_files"][selected_dataset]["path_file_preprocessed"]
+    )
     df.to_csv(path, sep=";", index=False)
-    logger.debug('file wrote : ' + path)
+    logger.debug("file wrote : " + path)
 
     return "OK"
+
 
 def load_preprocessed_csv_from_name(conf):
     """
@@ -68,9 +79,13 @@ def load_preprocessed_csv_from_name(conf):
     Returns: dataframe read
 
     """
-    selected_dataset = conf['selected_dataset']
-    path = conf["paths"]["Outputs_path"]+conf["paths"]["folder_preprocessed"]+conf["dict_info_files"][selected_dataset]["path_file_preprocessed"]
+    selected_dataset = conf["selected_dataset"]
+    path = (
+        conf["paths"]["Outputs_path"]
+        + conf["paths"]["folder_preprocessed"]
+        + conf["dict_info_files"][selected_dataset]["path_file_preprocessed"]
+    )
     df = read_csv_from_path(path)
-    logger.debug('file read : '+ path)
+    logger.debug("file read : " + path)
 
     return df

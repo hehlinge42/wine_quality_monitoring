@@ -189,12 +189,25 @@ def get_y_column_from_conf(conf):
 
 
 def get_column_mapping(conf, df):
-    y_column = get_y_column_from_conf(conf)
-    X_columns = [x for x in df.columns if x != y_column]
+    def map_feature_type(json_column_mapping, df, feature_type):
+        columns_to_ret = []
+        for col_mapping in json_column_mapping[feature_type]:
+            for col_df in df.columns:
+                if col_mapping in col_df:
+                    columns_to_ret.append(col_df)
+        return columns_to_ret
+
+    with open(conf["paths"]["Inputs_path"] + conf["column_mapping_path"], "r") as fd:
+        json_column_mapping = json.load(fd)
+
     column_mapping = {
-        "target": y_column,
-        "prediction": "prediction",
-        "numerical_features": X_columns,
+        "target": json_column_mapping["target"],
+        "numerical_features": map_feature_type(
+            json_column_mapping, df, "numerical_features"
+        ),
+        "categorical_features": map_feature_type(
+            json_column_mapping, df, "categorical_features"
+        ),
     }
     return column_mapping
 

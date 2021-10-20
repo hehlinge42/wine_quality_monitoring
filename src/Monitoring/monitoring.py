@@ -6,17 +6,26 @@ from evidently.profile_sections import (
 )
 from sklearn.ensemble import IsolationForest
 
-import json
 import sys
-import pandas as pd
 
 sys.path.insert(0, "utils/")
-
 import utils as u
+
+import json
+import pandas as pd
 from logzero import logger
 
 
 def check_adwin_concept_drift(data, features):
+    """
+
+    Args:
+        data ([pd.DataFrame]): historical data
+        features ([list]): list of columns to check
+
+    Returns:
+        [dict]: feature-wise
+    """
 
     adwin_results = {}
     for feature in features:
@@ -51,13 +60,28 @@ def detect_features_drift(
     confidence=0.95,
     get_pvalues=True,
 ):
-    """
-    Returns 1 if Data Drift is detected, else returns 0.
-    If get_pvalues is True, returns p-value for each feature.
-    The Data Drift detection depends on the confidence level and the threshold.
-    For each individual feature Data Drift is detected with the selected confidence (default value is 0.95).
+    """Detects drifts between a past data dataset and a new batch on both
+        features and target
+
+    Args:
+        past_data (pd.DataFrame): Training dataset of the model in production
+            (both features and target)
+        new_batch (pd.DataFrame): New batch to be evaluated
+        column_mapping (dict): {
+            "numerical_features": [list of numerical features],
+            "target": target
+        }
+        confidence (float, optional): Confidence level for the Kolmogorov-Smirnov test.
+            Defaults to 0.95.
+        get_pvalues (bool, optional): Returns 1 if Data Drift is detected, else returns 0.
+            If get_pvalues is True, returns p-value for each feature. Defaults to True.
+
+    Returns:
+        [list]: Returns 1 if Data Drift is detected, else returns 0.
+            If get_pvalues is True, returns p-value for each feature.
     """
 
+    logger.debug(f"column_mapping: {column_mapping}")
     data_drift_profile = Profile(
         sections=[DataDriftProfileSection, CatTargetDriftProfileSection]
     )
@@ -71,7 +95,12 @@ def detect_features_drift(
         if column_mapping.get("numerical_features")
         else []
     )
-    for feature in num_features:
+    cat_features = (
+        column_mapping.get("categorical_features")
+        if column_mapping.get("categorical_features")
+        else []
+    )
+    for feature in num_features + cat_features:
         p_value = json_report["data_drift"]["data"]["metrics"][feature]["p_value"]
         if get_pvalues:
             drifts.append((feature, p_value))
@@ -110,28 +139,6 @@ def get_means_std(df_preprocessed):
     return ret
 
 
-def get_current_state(db_batch, global_data):
-    current_state = {}
-    current_state["nb_lines"] = db_batch.at[len(db_batch) - 1, "nb_lines"]
-    current_state["current_model_version"] = db_batch.at[len(db_batch) - 1, "version"]
-    current_state["current_model_version_int"] = int(
-        current_state["current_model_version"][1:]
-    )
-    current_state["next_model_version"] = "_" + str(
-        current_state["current_model_version_int"] + 1
-    )
-    current_state["classifier"] = u.load_model(
-        global_data["conf"], version=current_state["current_model_version"]
-    )
-    current_state["training_set"] = None
-    current_state["iso_forest"] = u.load_model(
-        global_data["conf"],
-        name="isolation_forest",
-        version=current_state["current_model_version"],
-    )
-    return current_state
-
-
 def fit_isolation_forest(X_train, conf, version):
     iso = IsolationForest(contamination=0.05)
     iso.fit(X_train)
@@ -150,38 +157,3 @@ def get_outliers(X, iso_forest, conf):
 
 def get_share_outliers(db):
     return str(round(db.at[len(db) - 1, "nb_outliers"] * 100)) + "%"
-
-
-def get_recap(db, global_data):
-    try:
-        features_pvalue = [col + "_p_value" for col in global_data["X_columns"]]
-        cols = features_pvalue + [global_data["y_column"] + "_p_value"]
-        df = db.loc[len(db) - 1, cols].T.to_frame()
-        logger.debug(f"df.columns: {df.columns}")
-        df.rename({df.columns[-1]: "p-value"}, axis=1, inplace=True)
-        features = {
-            features_pvalue[i]: global_data["X_columns"][i]
-            for i in range(len(features_pvalue))
-        }
-        df.rename(features, axis=0, inplace=True)
-        df.sort_values(by=["p-value"], inplace=True)
-    except KeyError:
-        df = None
-    except:
-        logger.exception("")
-    return df
-
-
-def get_advice(adwin):
-
-    if adwin is None:
-        advice = "No advice for now."
-    else:
-        advice = (
-            "You may wish to look at the distribution around the following index: <br/>"
-        )
-        for k, v in adwin.items():
-            if len(v) != 0:
-                advice += f"- {k} look at indices **{v}**<br/>"
-
-    return advice

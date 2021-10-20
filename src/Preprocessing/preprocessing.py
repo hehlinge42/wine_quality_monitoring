@@ -95,6 +95,65 @@ def preprocessing_for_wine_dataset(df, conf):
     return df, X_columns, y_column
 
 
+def preprocessing_for_marketing_dataset(df, conf):
+    """
+    Preprocessing for the WINE dataset
+    Args:
+        df: Wine dataset
+        conf:  conf file
+
+    Returns: Preprocessed Wine Dataset
+
+    """
+    # Steps:
+    # Clean the output (as 0 or 1)
+    # one hot
+    # drop id
+
+    logger.debug("Cleaning ")
+    # Cleaning Income
+    df[" Income "] = df[" Income "].str.replace("$", "")
+    df[" Income "] = df[" Income "].str.replace(",", "")
+    df[" Income "] = df[" Income "].str.replace(" ", "")
+    df[" Income "] = df[" Income "].fillna(0)
+    # Renaming
+    df = df.rename(columns={" Income ": "Income"})
+
+    # Cleaning Dates:
+    df["Dt_Customer"] = pd.to_datetime(df["Dt_Customer"])
+    df["Dt_year"] = df["Dt_Customer"].dt.year
+    df["Dt_month"] = df["Dt_Customer"].dt.month
+
+    logger.debug("One hot Encoding")
+    # one hot encoding
+    cols = ["Education", "Marital_Status", "Country"]
+    df = one_hot_encoder(df, cols)
+
+    logger.debug("Dropping unique columns")
+    # Drop id:
+    df_preprocessed = df.drop(["Dt_Customer"], axis=1)
+
+    logger.debug("Selection of X and Y")
+    # returning columns for train test split
+    y_column = u.get_y_column_from_conf(conf)
+    X_columns = [x for x in df_preprocessed.columns if x != y_column]
+
+    logger.debug("Verification of float and na values ")
+    # verification:
+    for col in df_preprocessed.columns:
+        try:
+            df_preprocessed[col] = (
+                df_preprocessed[col].astype(str).str.replace(",", ".").astype(float)
+            )
+        except:
+            logger.error(col + " cannot be typed as float")
+        if df_preprocessed[col].isna().sum() > 0:
+            logger.warning("NA présent dans " + col)
+    logger.info("preprocessing Marketing ok")
+
+    return df_preprocessed, X_columns, y_column
+
+
 ############################## Preprocessing Utils Functions ###########
 def one_hot_encoder(df, cols):
     """
