@@ -6,3 +6,4 @@ scikit-learn
 lightgbm
 scikit-multiflow
 evidently
+altair
