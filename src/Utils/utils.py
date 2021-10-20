@@ -197,7 +197,11 @@ def get_column_mapping(conf, df):
                     columns_to_ret.append(col_df)
         return columns_to_ret
 
-    with open(conf["paths"]["Inputs_path"] + conf["column_mapping_path"], "r") as fd:
+    with open(
+        conf["paths"]["Inputs_path"]
+        + conf["dict_info_files"][conf["selected_dataset"]]["column_mapping_path"],
+        "r",
+    ) as fd:
         json_column_mapping = json.load(fd)
 
     column_mapping = {

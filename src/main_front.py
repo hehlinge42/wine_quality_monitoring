@@ -133,7 +133,7 @@ with st.sidebar:
             db_batch, db_models, nb_outliers, f1_score, global_data
         )
 
-st.title("Monitoring wine quality predictions")
+st.title(f"Monitoring {global_data['conf']['selected_dataset']} quality predictions")
 st.header(f"Model in production: version {db_models.tail(1)['version'].values[0][1:]}")
 
 with st.container():

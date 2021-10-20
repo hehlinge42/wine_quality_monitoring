@@ -1,7 +1,5 @@
 {
-    "target": [
-        "quality"
-    ],
+    "target": "quality",
     "numerical_features": [
         "alcohol",
         "chlorides",
